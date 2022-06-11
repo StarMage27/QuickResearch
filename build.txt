@@ -1,0 +1,3 @@
+displayName = Quick research
+author = StarMage27
+version = 1.8.3
