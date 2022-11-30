@@ -24,59 +24,60 @@ namespace QuickResearch
             Main.LocalPlayerCreativeTracker.ItemSacrifices.SetSacrificeCountDirectly(ItemPersistentIdsByNetIds[item.type], newSarcrificeCount);
         }
 
-        public static void BeginResearch()
-        {
-            bool researched = false;
-            bool researching = false;
-            bool completeResearchEnabled = ModContent.GetInstance<QRConfig>().CompleteResearchToggle;
+		public static void BeginResearch()
+		{
+			bool flag = false;
+			bool flag2 = false;
+			bool completeResearchToggle = ModContent.GetInstance<QRConfig>().CompleteResearchToggle;
+			Item[] inventory = Main.LocalPlayer.inventory;
+			int num = default(int);
+			
+			for (int i = 0; i < inventory.Length; i++)
+			{
+				if (inventory[i] == Main.LocalPlayer.HeldItem || inventory[i].favorited || inventory[i].IsAir || !CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(inventory[i].type, out num))
+				{
+					continue;
+				}
+				
+				bool isFullyResearched = false;
+				int CurrentSacrificeCount = CreativeUI.GetSacrificeCount(inventory[i].type, out isFullyResearched);
+				int MaxSacrificeCount = CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[inventory[i].type];
+				if ( ! isFullyResearched && (completeResearchToggle && inventory[i].stack >= MaxSacrificeCount - CurrentSacrificeCount) || (!completeResearchToggle))
+				{
+					Main.NewText(inventory[i]);
+					
+					flag2 = true;
 
-            foreach (Item item in Main.LocalPlayer.inventory)
-            {
-                if ((item != Main.LocalPlayer.HeldItem) && !item.favorited && !item.IsAir && Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(item.type, out _))
-                {
-                    int count = Main.LocalPlayer.creativeTracker.ItemSacrifices.GetSacrificeCount(item.type);
-                    int countNeeded = Instance.SacrificeCountNeededByItemId[item.type];
+					int SubtractingAmount = inventory[i].stack;
+					int ItemID = inventory[i].type;
+					
+					
+					int amountWeSacrificed;
+					CreativeUI.SacrificeItem(inventory[i], out amountWeSacrificed);
+					
+					CurrentSacrificeCount = CreativeUI.GetSacrificeCount(ItemID, out isFullyResearched);
+					if (isFullyResearched)
+					{						
+						flag = true;
+					}
+										
+					inventory[i].TurnToAir();					
 
-                    if ((completeResearchEnabled && (item.stack >= countNeeded)) || ((!completeResearchEnabled) && (count < countNeeded)))
-                    {
-                        researching = true;
-                        int newSarcrificeCount = count + item.stack;
+				}				
+			}
 
-                        if (newSarcrificeCount > countNeeded)
-                        {
-                            researched = true;
-                            newSarcrificeCount = countNeeded;
-                            item.stack = count + item.stack - countNeeded;
-                            SetSacrificeCount(item, newSarcrificeCount);
-                        }
-                        else if (newSarcrificeCount == countNeeded)
-                        {
-                            researched = true;
-                            SetSacrificeCount(item, newSarcrificeCount);
-                            item.TurnToAir();
-                        }
-                        else
-                        {
-                            SetSacrificeCount(item, newSarcrificeCount);
-                            item.TurnToAir();
-                        }
-                    }
-                }
-            }
-
-            if (researched)
-            {
-                PlaySound(SoundID.Research);
-                PlaySound(SoundID.ResearchComplete);
-            }
-            else if (researching == true)
-            {
-                PlaySound(SoundID.Research);
-            }
-            else
-            {
-                PlaySound(SoundID.MenuTick);
-            }
-        }
-    }
-}
+			if (flag)
+			{
+				SoundEngine.PlaySound(SoundID.Research, (Vector2?)null);
+				SoundEngine.PlaySound(SoundID.ResearchComplete, (Vector2?)null);
+			}
+			else if (flag2)
+			{
+				SoundEngine.PlaySound(SoundID.Research, (Vector2?)null);
+			}
+			else
+			{
+				SoundEngine.PlaySound(SoundID.MenuTick, (Vector2?)null);
+			}
+		}
+	}
