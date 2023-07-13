@@ -15,7 +15,8 @@ Many thanks to the Discord community of tModLoader for their help in creation of
 
 Update 2.0
 - Updated to Terraria 1.4.4
-- Improved mod icon
+- Updated mod icon
+- Improved compatibility
 
 Update 1.8
 - Fixed items not researching correctly when there are just enough of them to fully research.
