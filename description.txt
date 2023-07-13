@@ -5,7 +5,7 @@ Sometimes the hotkey may not be assigned and you will have to assign it manually
 This mod should also works with items that can be researched from other mods.
 
 If you encounter any bugs, report them in the Steam page of this mod.
-Many thanks to the Discord community of tModLoader for their help in mod creation.
+Many thanks to the Discord community of tModLoader for their help in creation of this mod.
 
 Update 2.0
 - Updated to Terraria 1.4.4
