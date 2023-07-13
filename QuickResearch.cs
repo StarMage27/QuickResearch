@@ -5,12 +5,19 @@ namespace QuickResearch
 {
 	public class QuickResearch : Mod
 	{
-        private static ModKeybind qR;
-        
-        public static ModKeybind QRBind { get => qR; set => qR = value; }
+        public static ModKeybind QRBind { get; set; }
+        public static ModKeybind QCBind { get; set; }
 
-        public override void Load() => QRBind = KeybindLoader.RegisterKeybind(this, "Quick research", "J");
+        public override void Load()
+        {
+            QRBind = KeybindLoader.RegisterKeybind(this, "Quick research", "J");
+            QCBind = KeybindLoader.RegisterKeybind(this, "Quick clean", "K");
+        }
 
-        public override void Unload() => QRBind = null;
+        public override void Unload()
+        {
+            QRBind = null;
+            QCBind = null;
+        }
     }
 }

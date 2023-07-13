@@ -7,11 +7,22 @@ namespace QuickResearch.Config
 	{
 		public override ConfigScope Mode => ConfigScope.ClientSide;
 
-		//[Header("QR config")]
-		//[Label("Only complete research")]
-		//[Tooltip("Only research items if there are enough of them to complete research.")]
-		[DefaultValue(false)]
+        [DefaultValue(true)]
+        public bool ShowButtonsToggle;
 
+        [DefaultValue(false)]
 		public bool CompleteResearchToggle;
-	}
+
+        [DefaultValue(false)]
+        public bool ShowResearchMessagesToggle;
+
+        [DefaultValue(false)]
+        public bool ResearchCoinsToggle;
+
+        [DefaultValue(false)]
+        public bool ShowCleanMessagesToggle;
+
+        [DefaultValue(false)]
+        public bool CleanCoinsToggle;
+    }
 }

@@ -7,11 +7,19 @@ A mod for tModLoader for Terraria 1.4
 This mod allows you to quickly research all items in your inventory. It researches only the necessary number of items and does not affect already researched or favorited items.
 To quickly research items, you need to press the "J" key or a button under the inventory.
 
-Sometimes the hotkey may not be assigned and you will have to assign it manually.
+It also allows to quickly clean your inventory of all items that have been researched. There is also a button and "K" keybind.
+
+Sometimes hotkeys may not be assigned and you will have to assign them manually.
 This mod should also works with items that can be researched from other mods.
 
 If you encounter any bugs, report them in the Steam page of this mod.
 Many thanks to the Discord community of tModLoader for their help in creation of this mod.
+
+Update 2.1
+- Added Quick Clean button and keybind to remove all researched items from the inventory
+- Added an option to show researched items in chat
+- Added an option to not research coins
+- Added an option to hide buttons
 
 Update 2.0
 - Updated to Terraria 1.4.4

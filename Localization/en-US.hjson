@@ -1,14 +1,42 @@
 Mods: {
 	QuickResearch: {
-		"Keybinds.Quick research.DisplayName": Quick research
+		Keybinds: {
+			"Quick research.DisplayName": Quick research
+			"Quick clean.DisplayName": Quick clean
+		}
 
 		Configs: {
 			QRConfig: {
 				DisplayName: Quick Research Config
 
+				ShowButtonsToggle: {
+					Label: Show buttons
+					Tooltip: Show UI buttons under the inventory
+				}
+
 				CompleteResearchToggle: {
 					Label: Only complete research
 					Tooltip: Only research items if there are enough of them to complete research
+				}
+
+				ShowResearchMessagesToggle: {
+					Label: Quick research messages in chat
+					Tooltip: Show researched items in chat
+				}
+
+				ResearchCoinsToggle: {
+					Label: Research coins
+					Tooltip: Research coins along with all the other items
+				}
+
+				ShowCleanMessagesToggle: {
+					Label: Quick Clean messages in chat
+					Tooltip: Show cleaned items in chat
+				}
+
+				CleanCoinsToggle: {
+					Label: Clean coins
+					Tooltip: Clean coins along with all the other items
 				}
 			}
 		}

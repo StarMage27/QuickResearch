@@ -4,6 +4,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.GameContent.UI.Elements;
 using ReLogic.Content;
+using System.IO;
 
 namespace QuickResearch.UI
 {
@@ -12,15 +13,20 @@ namespace QuickResearch.UI
         internal string HoverText;
         internal bool mouseover = false;
         internal bool mousedown = false;
+        internal string path;
 
-        public UIHoverImageButton(Asset<Texture2D> texture, string hoverText) : base(texture) => HoverText = hoverText;
+        public UIHoverImageButton(Asset<Texture2D> texture, string hoverText, string nPath) : base(texture)
+        {
+            HoverText = hoverText;
+            path = nPath;
+        }
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
-            var texture = ModContent.Request<Texture2D>("QuickResearch/UI/QuickResearchButton");
-            var textureMO = ModContent.Request<Texture2D>("QuickResearch/UI/QuickResearchButtonMouseOver");
-            var textureD = ModContent.Request<Texture2D>("QuickResearch/UI/QuickResearchButtonPress");
-            var textureMOD = ModContent.Request<Texture2D>("QuickResearch/UI/QuickResearchButtonPressMouseOver");
+            var texture = ModContent.Request<Texture2D>(path);
+            var textureMO = ModContent.Request<Texture2D>(path + "MouseOver");
+            var textureD = ModContent.Request<Texture2D>(path + "Press");
+            var textureMOD = ModContent.Request<Texture2D>(path + "PressMouseOver");
 
             base.DrawSelf(spriteBatch);
 

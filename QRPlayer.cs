@@ -5,6 +5,7 @@ using Terraria.GameInput;
 using QuickResearch.Config;
 using Terraria.Audio;
 using Terraria.GameContent.Creative;
+using Humanizer;
 
 namespace QuickResearch
 {
@@ -16,53 +17,125 @@ namespace QuickResearch
             {
                 BeginQuickResearch();
             }
+
+            if (QuickResearch.QCBind.JustPressed && Main.GameMode.Equals(3))
+            {
+                BeginQuickClean();
+            }
         }
 
         public static void BeginQuickResearch()
         {
-            bool flag = false;
-            bool flag2 = false;
+            bool flagResearched = false;
+            bool flagSacrificed = false;
             bool completeResearchToggle = ModContent.GetInstance<QRConfig>().CompleteResearchToggle;
+            bool showResearchMessagesToggle = ModContent.GetInstance<QRConfig>().ShowResearchMessagesToggle;
+            bool researchCoinsToggle = ModContent.GetInstance<QRConfig>().ResearchCoinsToggle;
 
             Item[] inventory = Main.LocalPlayer.inventory;
-            int num = default;
 
             for (int i = 0; i < inventory.Length; i++)
             {
-                if (inventory[i] == Main.LocalPlayer.HeldItem || inventory[i].favorited || inventory[i].IsAir || !CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(inventory[i].type, out num))
+                Item item = inventory[i];
+                int itemID = item.type;
+
+                if (item.favorited || item.IsAir) { continue; }
+                if (item == Main.LocalPlayer.HeldItem) { continue; }
+                if (!researchCoinsToggle && item.IsACoin) { continue; }
+                if (!CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(itemID, out _)) { continue; }
+
+                string itemName = item.Name;
+                int currentSacrificeCount = CreativeUI.GetSacrificeCount(itemID, out bool isResearched);
+                int maxSacrificeCount = CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[itemID];
+
+                if (isResearched) { continue; }
+                if (item.stack >= maxSacrificeCount - currentSacrificeCount || !completeResearchToggle)
                 {
-                    continue;
-                }
+                    flagSacrificed = true;
 
-                int CurrentSacrificeCount = CreativeUI.GetSacrificeCount(inventory[i].type, out bool isFullyResearched);
+                    CreativeUI.SacrificeItem(item, out int amountSacrificed);
 
-                int MaxSacrificeCount = CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[inventory[i].type];
+                    currentSacrificeCount = CreativeUI.GetSacrificeCount(itemID, out isResearched);
 
-                if (!isFullyResearched && ((completeResearchToggle && inventory[i].stack >= MaxSacrificeCount - CurrentSacrificeCount) || (!completeResearchToggle)))
-                {
-                    //Main.NewText(inventory[i]);
+                    if (isResearched) { flagResearched = true; }
 
-                    flag2 = true;
-
-                    CreativeUI.SacrificeItem(inventory[i], out int amountWeSacrificed);
-
-                    CurrentSacrificeCount = CreativeUI.GetSacrificeCount(inventory[i].type, out isFullyResearched);
-
-                    if (isFullyResearched)
+                    if (showResearchMessagesToggle)
                     {
-                        flag = true;
+                        if (isResearched)
+                        {
+                            Main.NewText(
+                                $"[i/s{amountSacrificed}:{itemID}]" +
+                                $" Researched {itemName}!"
+                                );
+                        }
+                        else
+                        {
+                            Main.NewText(
+                                $"[i/s{amountSacrificed}:{itemID}]" +
+                                $" Sacrificed {itemName}" +
+                                $" ({currentSacrificeCount}/{maxSacrificeCount})"
+                                );
+                        }
                     }
                 }
             }
 
-            if (flag)
+            if (flagResearched)
             {
                 SoundEngine.PlaySound(SoundID.Research);
                 SoundEngine.PlaySound(SoundID.ResearchComplete);
             }
-            else if (flag2)
+            else if (flagSacrificed)
             {
                 SoundEngine.PlaySound(SoundID.Research);
+            }
+            else
+            {
+                SoundEngine.PlaySound(SoundID.MenuTick);
+            }
+        }
+
+        public static void BeginQuickClean()
+        {
+            bool showCleanMessagesToggle = ModContent.GetInstance<QRConfig>().ShowCleanMessagesToggle;
+            bool cleanCoinsToggle = ModContent.GetInstance<QRConfig>().CleanCoinsToggle;
+
+            bool flagCleaned = false;
+            Item[] inventory = Main.LocalPlayer.inventory;
+
+            for (int i = 0; i < inventory.Length; i++)
+            {
+                Item item = inventory[i];
+                int itemID = item.type;
+
+                if (item.favorited || item.IsAir) { continue; }
+                if (item == Main.LocalPlayer.HeldItem) { continue; }
+                if (!cleanCoinsToggle && item.IsACoin) { continue; }
+                if (!CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(itemID, out _)) { continue; }
+
+                string itemName = item.Name;
+                int itemAmount = item.stack;
+
+                CreativeUI.GetSacrificeCount(itemID, out bool isResearched);
+
+                if (isResearched)
+                {
+                    item.TurnToAir();
+                    flagCleaned = true;
+                }
+
+                if (showCleanMessagesToggle)
+                {
+                    Main.NewText(
+                        $"[i/s{itemAmount}:{itemID}]" +
+                        $" Cleaned {itemName}."
+                        );
+                }
+            }
+
+            if (flagCleaned)
+            {
+                SoundEngine.PlaySound(SoundID.Grab);
             }
             else
             {
