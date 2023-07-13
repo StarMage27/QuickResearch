@@ -1,4 +1,7 @@
+<img src="https://github.com/StarMage27/QuickResearch/blob/main/icon_workshop.png" width="200" />
+
 # QuickResearch
+
 A mod for tModLoader for Terraria 1.4
 
 This mod allows you to quickly research all items in your inventory. It researches only the necessary number of items and does not affect already researched or favorited items.
@@ -35,3 +38,5 @@ Update 1.7
 
 Update 1.8
 - Fixed items not researching correctly when there are just enough of them to fully research.
+
+Steam page: https://steamcommunity.com/sharedfiles/filedetails/?id=2574362684

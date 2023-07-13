@@ -35,3 +35,5 @@ Update 1.2:
 Update 1.1:
 - Quick research now does not affect your favourited items.
 - Fixed sounds.
+
+Source code: https://github.com/StarMage27/QuickResearch
