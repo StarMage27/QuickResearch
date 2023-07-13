@@ -14,7 +14,7 @@ namespace QuickResearch.UI
             button.Height.Set(32, 0);
             button.Top.Set(267, 0);
             button.Left.Set(70, 0);
-            button.OnClick += OnButtonClick;
+            button.OnLeftClick += OnButtonClick;
             
             Append(button);
         }

@@ -1,0 +1,16 @@
+Mods: {
+	QuickResearch: {
+		"Keybinds.Quick research.DisplayName": Quick research
+
+		Configs: {
+			QRConfig: {
+				DisplayName: Quick Research Config
+
+				CompleteResearchToggle: {
+					Label: Only complete research
+					Tooltip: Only research items if there are enough of them to complete research
+				}
+			}
+		}
+	}
+}

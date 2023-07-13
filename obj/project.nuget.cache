@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "+GlAb7NyLOCcPyscDqPO5jghcUMDBijtRqM76BQ+8h1xbHf91Fhx1r99FOWHe6YPm102JaEka3zKLo7wyjJF6w==",
+  "dgSpecHash": "34MeqXl8nRPLX+ZDm8rmUpd6O3RM7m+5b8ui6yELdykf2Cs4etmYRQZU3x9zUSOCpY/2+P1Op+VC8PX7JVjooA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\dkfro\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\QuickResearch.csproj",
+  "projectFilePath": "C:\\Users\\StarMage\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\QuickResearch.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\dkfro\\.nuget\\packages\\tmodloader.codeassist\\0.1.5\\tmodloader.codeassist.0.1.5.nupkg.sha512"
+    "C:\\Users\\StarMage\\.nuget\\packages\\tmodloader.codeassist\\0.1.5\\tmodloader.codeassist.0.1.5.nupkg.sha512"
   ],
   "logs": []
 }

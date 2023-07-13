@@ -31,23 +31,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\dkfro\\.nuget\\packages\\": {},
+    "C:\\Users\\StarMage\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\dkfro\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\QuickResearch.csproj",
+      "projectUniqueName": "C:\\Users\\StarMage\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\QuickResearch.csproj",
       "projectName": "QuickResearch",
-      "projectPath": "C:\\Users\\dkfro\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\QuickResearch.csproj",
-      "packagesPath": "C:\\Users\\dkfro\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\dkfro\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\obj\\",
+      "projectPath": "C:\\Users\\StarMage\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\QuickResearch.csproj",
+      "packagesPath": "C:\\Users\\StarMage\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\StarMage\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\dkfro\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\StarMage\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -95,7 +95,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
       }
     }
   }
