@@ -3,9 +3,9 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameInput;
 using QuickResearch.Config;
-using static Terraria.ID.ContentSamples;
-using static Terraria.Audio.SoundEngine;
-using static Terraria.GameContent.Creative.CreativeItemSacrificesCatalog;
+using Terraria.Audio;
+using Terraria.GameContent.Creative;
+using Microsoft.Xna.Framework;
 
 namespace QuickResearch
 {
@@ -15,67 +15,65 @@ namespace QuickResearch
         {
             if (QuickResearch.QRBind.JustPressed && Main.GameMode.Equals(3))
             {
-                BeginResearch();
+                BeginQuickResearch();
             }
         }
 
-        private static void SetSacrificeCount(Item item, int newSarcrificeCount)
+        public static void BeginQuickResearch()
         {
-            Main.LocalPlayerCreativeTracker.ItemSacrifices.SetSacrificeCountDirectly(ItemPersistentIdsByNetIds[item.type], newSarcrificeCount);
-        }
+            bool flag = false;
+            bool flag2 = false;
+            bool completeResearchToggle = ModContent.GetInstance<QRConfig>().CompleteResearchToggle;
+            Item[] inventory = Main.LocalPlayer.inventory;
+            int num = default(int);
 
-        public static void BeginResearch()
-        {
-            bool researched = false;
-            bool researching = false;
-            bool completeResearchEnabled = ModContent.GetInstance<QRConfig>().CompleteResearchToggle;
-
-            foreach (Item item in Main.LocalPlayer.inventory)
+            for (int i = 0; i < inventory.Length; i++)
             {
-                if ((item != Main.LocalPlayer.HeldItem) && !item.favorited && !item.IsAir && Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(item.type, out _))
+                if (inventory[i] == Main.LocalPlayer.HeldItem || inventory[i].favorited || inventory[i].IsAir || !CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(inventory[i].type, out num))
                 {
-                    int count = Main.LocalPlayer.creativeTracker.ItemSacrifices.GetSacrificeCount(item.type);
-                    int countNeeded = Instance.SacrificeCountNeededByItemId[item.type];
+                    continue;
+                }
 
-                    if ((completeResearchEnabled && (item.stack >= countNeeded)) || ((!completeResearchEnabled) && (count < countNeeded)))
+                bool isFullyResearched = false;
+                int CurrentSacrificeCount = CreativeUI.GetSacrificeCount(inventory[i].type, out isFullyResearched);
+                int MaxSacrificeCount = CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[inventory[i].type];
+
+                if (!isFullyResearched && (completeResearchToggle && inventory[i].stack >= MaxSacrificeCount - CurrentSacrificeCount) || (!completeResearchToggle))
+                {
+                    Main.NewText(inventory[i]);
+
+                    flag2 = true;
+
+                    int SubtractingAmount = inventory[i].stack;
+                    int ItemID = inventory[i].type;
+
+
+                    int amountWeSacrificed;
+                    CreativeUI.SacrificeItem(inventory[i], out amountWeSacrificed);
+
+                    CurrentSacrificeCount = CreativeUI.GetSacrificeCount(ItemID, out isFullyResearched);
+                    if (isFullyResearched)
                     {
-                        researching = true;
-                        int newSarcrificeCount = count + item.stack;
-
-                        if (newSarcrificeCount > countNeeded)
-                        {
-                            researched = true;
-                            newSarcrificeCount = countNeeded;
-                            item.stack = count + item.stack - countNeeded;
-                            SetSacrificeCount(item, newSarcrificeCount);
-                        }
-                        else if (newSarcrificeCount == countNeeded)
-                        {
-                            researched = true;
-                            SetSacrificeCount(item, newSarcrificeCount);
-                            item.TurnToAir();
-                        }
-                        else
-                        {
-                            SetSacrificeCount(item, newSarcrificeCount);
-                            item.TurnToAir();
-                        }
+                        flag = true;
                     }
+
+                    inventory[i].TurnToAir();
+
                 }
             }
 
-            if (researched)
+            if (flag)
             {
-                PlaySound(SoundID.Research);
-                PlaySound(SoundID.ResearchComplete);
+                SoundEngine.PlaySound(SoundID.Research, (Vector2?)null);
+                SoundEngine.PlaySound(SoundID.ResearchComplete, (Vector2?)null);
             }
-            else if (researching == true)
+            else if (flag2)
             {
-                PlaySound(SoundID.Research);
+                SoundEngine.PlaySound(SoundID.Research, (Vector2?)null);
             }
             else
             {
-                PlaySound(SoundID.MenuTick);
+                SoundEngine.PlaySound(SoundID.MenuTick, (Vector2?)null);
             }
         }
     }

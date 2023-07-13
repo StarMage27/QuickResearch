@@ -21,7 +21,7 @@ namespace QuickResearch.UI
 
         private void OnButtonClick(UIMouseEvent evt, UIElement listeningElement)
         {
-            QRPlayer.BeginResearch();
+            QRPlayer.BeginQuickResearch();
         }
 
         internal void Unload()
