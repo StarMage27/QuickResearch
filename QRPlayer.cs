@@ -5,23 +5,30 @@ using Terraria.GameInput;
 using QuickResearch.Config;
 using Terraria.Audio;
 using Terraria.GameContent.Creative;
-using Humanizer;
+using System.Collections.Generic;
 
 namespace QuickResearch
 {
     public class QRPlayer : ModPlayer
     {
+        public List<Item> allItems;
+
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-            if (QuickResearch.QRBind.JustPressed && Main.GameMode.Equals(3))
+            if (Main.GameMode.Equals(3))
             {
-                BeginQuickResearch();
+                if (QuickResearch.QRBind.JustPressed) { BeginQuickResearch(); }
+                if (QuickResearch.QCBind.JustPressed) { BeginQuickClean(); }
+                if (QuickResearch.RCBind.JustPressed) { ResearchCraftable(); }
             }
+        }
 
-            if (QuickResearch.QCBind.JustPressed && Main.GameMode.Equals(3))
-            {
-                BeginQuickClean();
-            }
+        public override void OnEnterWorld()
+        {
+            QuickResearch.GetResearchableItems();
+            QuickResearch.GetAllCraftingItemsAndTiles();
+
+            base.OnEnterWorld();
         }
 
         public static void BeginQuickResearch()
@@ -31,6 +38,7 @@ namespace QuickResearch
             bool completeResearchToggle = ModContent.GetInstance<QRConfig>().CompleteResearchToggle;
             bool showResearchMessagesToggle = ModContent.GetInstance<QRConfig>().ShowResearchMessagesToggle;
             bool researchCoinsToggle = ModContent.GetInstance<QRConfig>().ResearchCoinsToggle;
+            bool researchCraftableAfterQuickResearchToggle = ModContent.GetInstance<QRConfig>().ResearchCraftableAfterQuickResearchToggle;
 
             Item[] inventory = Main.LocalPlayer.inventory;
 
@@ -93,6 +101,11 @@ namespace QuickResearch
             {
                 SoundEngine.PlaySound(SoundID.MenuTick);
             }
+
+            if (researchCraftableAfterQuickResearchToggle)
+            {
+                ResearchCraftable();
+            }
         }
 
         public static void BeginQuickClean()
@@ -136,6 +149,96 @@ namespace QuickResearch
             if (flagCleaned)
             {
                 SoundEngine.PlaySound(SoundID.Grab);
+            }
+            else
+            {
+                SoundEngine.PlaySound(SoundID.MenuTick);
+            }
+        }
+
+        public static void ResearchCraftable()
+        {
+            bool showResearchCraftableMessagesToggle = ModContent.GetInstance<QRConfig>().ShowResearchCraftableMessagesToggle;
+
+            bool itemsAreResearched = true;
+            bool itemsWereResearched = false;
+            string researchedItems = "";
+
+            while (itemsAreResearched == true)
+            {
+                itemsAreResearched = false;
+
+                foreach (var recipe in Main.recipe)
+                {
+                    bool stationResearched = false;
+                    
+                    if (recipe.requiredTile.Count == 0)
+                    {
+                        stationResearched = true;
+                    }
+
+                    if (recipe.createItem.type == 0)
+                    {
+                        continue;
+                    }
+
+                    foreach (var itemAndStationID in QuickResearch.itemsAndTileIDsOfStations)
+                    {
+                        foreach (var tile in recipe.requiredTile)
+                        {
+                            if (tile == itemAndStationID.tileID)
+                            {
+                                CreativeUI.GetSacrificeCount(itemAndStationID.item.type, out bool requiredStationIsResearched);
+                                if (requiredStationIsResearched)
+                                {
+                                    stationResearched = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (stationResearched) { break; }
+                    }
+
+                    if (!stationResearched) { continue; }
+
+                    bool allItemsResearched = true;
+
+                    foreach (var requiredItem in recipe.requiredItem)
+                    {
+                        CreativeUI.GetSacrificeCount(requiredItem.type, out bool requiredItemIsResearched);
+                        if (!requiredItemIsResearched)
+                        {
+                            allItemsResearched = false;
+                            break;
+                        }
+                    }
+
+                    if (allItemsResearched)
+                    {
+                        Item item = recipe.createItem;
+                        CreativeUI.GetSacrificeCount(item.type, out bool resultingItemIsResearched);
+
+                        if (resultingItemIsResearched)
+                        {
+                            continue;
+                        }
+
+                        CreativeUI.ResearchItem(item.type);
+                        itemsAreResearched = true;
+                        itemsWereResearched = true;
+                        researchedItems += $"[i/s1:{item.type}]";
+                    }
+                }
+            }
+
+            if (showResearchCraftableMessagesToggle && itemsWereResearched)
+            {
+                Main.NewText("Researched craftable items: " + researchedItems);
+            }
+
+            if (itemsWereResearched)
+            {
+                SoundEngine.PlaySound(SoundID.ResearchComplete);
             }
             else
             {

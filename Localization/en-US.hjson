@@ -3,6 +3,7 @@ Mods: {
 		Keybinds: {
 			"Quick research.DisplayName": Quick research
 			"Quick clean.DisplayName": Quick clean
+			"Research craftable.DisplayName": Research craftable
 		}
 
 		Configs: {
@@ -37,6 +38,16 @@ Mods: {
 				CleanCoinsToggle: {
 					Label: Clean coins
 					Tooltip: Clean coins along with all the other items
+				}
+
+				ShowResearchCraftableMessagesToggle: {
+					Label: Research Craftable messages in chat
+					Tooltip: Show messages in chat about items that were researched with Research Craftable
+				}
+
+				ResearchCraftableAfterQuickResearchToggle: {
+					Label: Research Craftable after Quick Research
+					Tooltip: After a Quick Research, also Research Craftable items
 				}
 			}
 		}

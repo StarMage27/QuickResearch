@@ -24,5 +24,11 @@ namespace QuickResearch.Config
 
         [DefaultValue(false)]
         public bool CleanCoinsToggle;
+
+        [DefaultValue(false)]
+        public bool ShowResearchCraftableMessagesToggle;
+
+        [DefaultValue(false)]
+        public bool ResearchCraftableAfterQuickResearchToggle;
     }
 }

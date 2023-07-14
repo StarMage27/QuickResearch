@@ -8,44 +8,51 @@ namespace QuickResearch.UI
 {
     class TheUI : UIState
     {
+        const string texturePath = "QuickResearch/UI/";
+
         public override void OnInitialize()
         {
-            bool showButtonsToggle = ModContent.GetInstance<QRConfig>().ShowButtonsToggle;
+            string buttonQRName = "Quick Research";
+            string pathQR = texturePath + buttonQRName.Replace(" ", "") + "Button/" + buttonQRName.Replace(" ", "") + "Button";
+            var textureQR = ModContent.Request<Texture2D>(pathQR);
+            UIHoverImageButton buttonQR = new(textureQR, buttonQRName, pathQR);   
+            buttonQR.Width.Set(34, 0);
+            buttonQR.Height.Set(32, 0);
+            buttonQR.Top.Set(267, 0);
+            buttonQR.Left.Set(70, 0);
+            buttonQR.OnLeftClick += OnButtonQRClick;
+            Append(buttonQR);
 
-            Main.NewText(showButtonsToggle);
+            string buttonQCName = "Quick Clean";
+            string pathQC = texturePath + buttonQCName.Replace(" ", "") + "Button/" + buttonQCName.Replace(" ", "") + "Button";
+            var textureQC = ModContent.Request<Texture2D>(pathQC);
+            UIHoverImageButton buttonQC = new(textureQC, buttonQCName, pathQC);
+            buttonQC.Width.Set(34, 0);
+            buttonQC.Height.Set(32, 0);
+            buttonQC.Top.Set(267, 0);
+            buttonQC.Left.Set(112, 0);
+            buttonQC.OnLeftClick += OnButtonQCClick;
+            Append(buttonQC);
 
-            if (showButtonsToggle)
-            {
-                string pathQR = "QuickResearch/UI/QuickResearchButton";
-                var textureQuickResearch = ModContent.Request<Texture2D>(pathQR);
-                UIHoverImageButton buttonQuickResearch = new(textureQuickResearch, "Quick Research", pathQR);
-                buttonQuickResearch.Width.Set(34, 0);
-                buttonQuickResearch.Height.Set(32, 0);
-                buttonQuickResearch.Top.Set(267, 0);
-                buttonQuickResearch.Left.Set(70, 0);
-                buttonQuickResearch.OnLeftClick += OnButtonResearchClick;
-                Append(buttonQuickResearch);
-
-                string pathQC = "QuickResearch/UI/QuickCleanButton";
-                var textureQuickClean = ModContent.Request<Texture2D>(pathQC);
-                UIHoverImageButton buttonQuickClean = new(textureQuickClean, "Quick Clean", pathQC);
-                buttonQuickClean.Width.Set(34, 0);
-                buttonQuickClean.Height.Set(32, 0);
-                buttonQuickClean.Top.Set(267, 0);
-                buttonQuickClean.Left.Set(112, 0);
-                buttonQuickClean.OnLeftClick += OnButtonCleanClick;
-                Append(buttonQuickClean);
-            }
+            string buttonRCName = "Research Craftable";
+            string pathRC = texturePath + buttonRCName.Replace(" ", "") + "Button/" + buttonRCName.Replace(" ", "") + "Button";
+            var textureRC = ModContent.Request<Texture2D>(pathRC);
+            UIHoverImageButton buttonRC = new(textureRC, buttonRCName, pathRC);
+            buttonRC.Width.Set(34, 0);
+            buttonRC.Height.Set(32, 0);
+            buttonRC.Top.Set(267, 0);
+            buttonRC.Left.Set(154, 0);
+            buttonRC.OnLeftClick += OnButtonRCClick;
+            Append(buttonRC);
         }
 
-        private void OnButtonResearchClick(UIMouseEvent evt, UIElement listeningElement) => QRPlayer.BeginQuickResearch();
+        private void OnButtonQRClick(UIMouseEvent evt, UIElement listeningElement) => QRPlayer.BeginQuickResearch();
 
-        private void OnButtonCleanClick(UIMouseEvent evt, UIElement listeningElement) => QRPlayer.BeginQuickClean();
+        private void OnButtonQCClick(UIMouseEvent evt, UIElement listeningElement) => QRPlayer.BeginQuickClean();
 
-        public override void OnDeactivate()
-        {
-            base.OnDeactivate();
-        }
+        private void OnButtonRCClick(UIMouseEvent evt, UIElement listeningElement) => QRPlayer.ResearchCraftable();
+
+        public override void OnDeactivate() => base.OnDeactivate();
 
         internal void Unload() { }
     }

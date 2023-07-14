@@ -2,18 +2,41 @@
 
 # QuickResearch
 
-A mod for tModLoader for Terraria 1.4
+## A mod for tModLoader for Terraria 1.4.4
 
-This mod allows you to quickly research all items in your inventory. It researches only the necessary number of items and does not affect already researched or favorited items.
-To quickly research items, you need to press the "J" key or a button under the inventory.
+This mod adds the following features:
 
-It also allows to quickly clean your inventory of all items that have been researched. There is also a button and "K" keybind.
+- Quick Research: allows you to quickly research all items in your inventory.
+  It researches only the necessary number of items and does not affect already researched or favorited items.
+  Keybind: "J".
+
+- Quick Clean: allows you to quickly clean your inventory of all items that have been researched.
+  Keybind: "K".
+  
+- Research Craftable (a.k.a. "Auto-craft research" or "Smart Research"): allows you to research all items that could be crafted from already researched items (if crafting station is also researched). 	
+  Keybind: "L".
+
+Each of these functions can also be used with the corresponding buttons.
+
+There are also options to:
+- Research Craftable items after each Quick Research.
+- Only research items if there are enough of them to fully research.
+- Research and/or clean coins from the inventory.
+- Show messages in chat with outcome of each function.
+- Remove UI buttons.
+
 
 Sometimes hotkeys may not be assigned and you will have to assign them manually.
 This mod should also works with items that can be researched from other mods.
 
-If you encounter any bugs, report them in the Steam page of this mod.
+If you encounter any bugs, report them in the Steam page or GitHub page of this mod.
 Many thanks to the Discord community of tModLoader for their help in creation of this mod.
+
+
+Update 2.2
+- Added Research Craftable button and keybind to research all items that can be made from already researched items
+- Also added an option to Research Craftable after a Quick Research
+- Option to hide button now actually hides them
 
 Update 2.1
 - Added Quick Clean button and keybind to remove all researched items from the inventory
@@ -51,5 +74,6 @@ Update 1.2:
 Update 1.1:
 - Quick research now does not affect your favourited items.
 - Fixed sounds.
+
 
 Steam page: https://steamcommunity.com/sharedfiles/filedetails/?id=2574362684

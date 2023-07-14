@@ -3,6 +3,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using QuickResearch.Config;
 
 namespace QuickResearch.UI
 {
@@ -33,6 +34,8 @@ namespace QuickResearch.UI
 
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
+            bool showButtonsToggle = ModContent.GetInstance<QRConfig>().ShowButtonsToggle;
+
             int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
 
             if (mouseTextIndex != -1)
@@ -50,7 +53,7 @@ namespace QuickResearch.UI
                 layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer("MyMod: MyInterface", drawMethod, InterfaceScaleType.UI));
             }
             
-            if (Main.GameMode.Equals(3) && Main.CreativeMenu.Blocked == false && Main.playerInventory == true)
+            if (showButtonsToggle && Main.GameMode.Equals(3) && Main.CreativeMenu.Blocked == false && Main.playerInventory == true)
             {
                 ShowMyUI();
             }
