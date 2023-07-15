@@ -30,7 +30,7 @@ namespace QuickResearch.UI
             buttonQC.Width.Set(34, 0);
             buttonQC.Height.Set(32, 0);
             buttonQC.Top.Set(267, 0);
-            buttonQC.Left.Set(112, 0);
+            buttonQC.Left.Set(154, 0);
             buttonQC.OnLeftClick += OnButtonQCClick;
             Append(buttonQC);
 
@@ -41,7 +41,7 @@ namespace QuickResearch.UI
             buttonRC.Width.Set(34, 0);
             buttonRC.Height.Set(32, 0);
             buttonRC.Top.Set(267, 0);
-            buttonRC.Left.Set(154, 0);
+            buttonRC.Left.Set(112, 0);
             buttonRC.OnLeftClick += OnButtonRCClick;
             Append(buttonRC);
         }
