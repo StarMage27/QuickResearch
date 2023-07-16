@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace QuickResearch
 {
 	public class QuickResearch : Mod
 	{
-        public static HashSet<Item> items; // All researchable items
+        public static HashSet<Item> items; // All items
 
         public static HashSet<(Item item, int tileID)> itemsAndTileIDsOfStations;
 
@@ -17,24 +18,28 @@ namespace QuickResearch
         public override void Load()
         {
             QRBind = KeybindLoader.RegisterKeybind(this, "Quick research", "J");
-            QCBind = KeybindLoader.RegisterKeybind(this, "Quick clean", "K");
-            RCBind = KeybindLoader.RegisterKeybind(this, "Research craftable", "L");
+            RCBind = KeybindLoader.RegisterKeybind(this, "Research craftable", "K");
+            QCBind = KeybindLoader.RegisterKeybind(this, "Quick clean", "L");
 
-            GetResearchableItems();
+            GetItems();
             GetAllCraftingItemsAndTiles();
         }
 
-        public static void GetResearchableItems()
+        public static void GetItems()
         {
             items = new HashSet<Item>();
 
             List<int> itemsID = new();
-            Main.LocalPlayerCreativeTracker.ItemSacrifices.FillListOfItemsThatCanBeObtainedInfinitely(itemsID);
 
-            foreach (int itemID in itemsID)
+            for (int i = 0; i < ItemLoader.ItemCount; i++)
             {
-                Item item = new(itemID);
-                items.Add(item);
+                try
+                {
+                    Item item = new(i);
+                    items.Add(item);
+
+                }
+                catch { }
             }
         }
 

@@ -23,14 +23,6 @@ namespace QuickResearch
             }
         }
 
-        public override void OnEnterWorld()
-        {
-            QuickResearch.GetResearchableItems();
-            QuickResearch.GetAllCraftingItemsAndTiles();
-
-            base.OnEnterWorld();
-        }
-
         public static void BeginQuickResearch()
         {
             bool flagResearched = false;
@@ -182,13 +174,13 @@ namespace QuickResearch
                         continue;
                     }
 
-                    foreach (var itemAndStationID in QuickResearch.itemsAndTileIDsOfStations)
+                    foreach (var tile in recipe.requiredTile)
                     {
-                        foreach (var tile in recipe.requiredTile)
+                        foreach (var (item, tileID) in QuickResearch.itemsAndTileIDsOfStations)
                         {
-                            if (tile == itemAndStationID.tileID)
+                            if (tile == tileID)
                             {
-                                CreativeUI.GetSacrificeCount(itemAndStationID.item.type, out bool requiredStationIsResearched);
+                                CreativeUI.GetSacrificeCount(item.type, out bool requiredStationIsResearched);
                                 if (requiredStationIsResearched)
                                 {
                                     stationResearched = true;

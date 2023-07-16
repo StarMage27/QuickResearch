@@ -10,10 +10,10 @@ This mod adds the following features:
   It researches only the necessary number of items and does not affect already researched or favorited items.
   Keybind: "J".
 
-- Quick Clean: allows you to quickly clean your inventory of all items that have been researched.
-  Keybind: "K".
-  
 - Research Craftable (a.k.a. "Auto-craft research" or "Smart Research"): allows you to research all items that could be crafted from already researched items (if crafting station is also researched). 	
+  Keybind: "K".
+
+- Quick Clean: allows you to quickly clean your inventory of all items that have been researched.
   Keybind: "L".
 
 Each of these functions can also be used with the corresponding buttons.
@@ -32,6 +32,10 @@ This mod should also works with items that can be researched from other mods.
 If you encounter any bugs, report them in the Steam page or GitHub page of this mod.
 Many thanks to the Discord community of tModLoader for their help in creation of this mod.
 
+
+Update 2.3
+- Fixed Research Craftable function
+- Swapped default hotkeys for Research Craftable and Quick Clean
 
 Update 2.2
 - Added Research Craftable button and keybind to research all items that can be made from already researched items
