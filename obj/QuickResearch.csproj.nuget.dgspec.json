@@ -1,36 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\StarMage\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\QuickResearch.csproj": {}
+    "/home/starmage/Development/Terraria Mod Sources/QuickResearch/QuickResearch.csproj": {}
   },
   "projects": {
-    "C:\\Users\\StarMage\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\QuickResearch.csproj": {
+    "/home/starmage/Development/Terraria Mod Sources/QuickResearch/QuickResearch.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\StarMage\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\QuickResearch.csproj",
+        "projectUniqueName": "/home/starmage/Development/Terraria Mod Sources/QuickResearch/QuickResearch.csproj",
         "projectName": "QuickResearch",
-        "projectPath": "C:\\Users\\StarMage\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\QuickResearch.csproj",
-        "packagesPath": "C:\\Users\\StarMage\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\StarMage\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\QuickResearch\\obj\\",
+        "projectPath": "/home/starmage/Development/Terraria Mod Sources/QuickResearch/QuickResearch.csproj",
+        "packagesPath": "/home/starmage/.nuget/packages/",
+        "outputPath": "/home/starmage/Development/Terraria Mod Sources/QuickResearch/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\StarMage\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/home/starmage/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "/usr/lib64/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {}
           }
         },
@@ -38,17 +33,17 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
-          "dependencies": {
-            "tModLoader.CodeAssist": {
-              "target": "Package",
-              "version": "[0.1.*, )"
-            }
-          },
+        "net8.0": {
+          "targetAlias": "net8.0",
           "imports": [
             "net461",
             "net462",
@@ -65,7 +60,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/10.0.106/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

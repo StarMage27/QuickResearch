@@ -1,0 +1,59 @@
+Update 2.6
+- Added support for modded crafting stations
+- Added support for recipe conditions
+- Added support for shimmer recipes
+- Added russian translation
+
+Update 2.5
+- No longer crashes when attempting to research craftable items that are not researchable
+- Researching craftable recipes now also researches recipes that require a demon altar
+- Alternative items for recipes are now supported
+
+Update 2.4
+- Buttons can now be hidden or shown individually
+
+Update 2.3
+- Fixed Research Craftable function
+- Swapped default hotkeys for Research Craftable and Quick Clean
+
+Update 2.2
+- Added Research Craftable button and keybind to research all items that can be made from already researched items
+- Also added an option to Research Craftable after a Quick Research
+- Option to hide button now actually hides them
+
+Update 2.1
+- Added Quick Clean button and keybind to remove all researched items from the inventory
+- Added an option to show researched items in chat
+- Added an option to not research coins
+- Added an option to hide buttons
+
+Update 2.0
+- Updated to Terraria 1.4.4
+- Updated mod icon
+- Improved compatibility
+
+Update 1.8
+- Fixed items not researching correctly when there are just enough of them to fully research.
+
+Update 1.7
+- Added an option to only research items if there are enough of them to fully research.
+
+Update 1.6:
+- Fixed button appearing incorrectly.
+- Now quick research only works when you are in journey mode.
+
+Update 1.5:
+- Added a button under the inventory for people who hate using hotkeys.
+
+Update 1.4:
+- Fixed mod not working properly.
+
+Update 1.3:
+- Now quick research doesn't affect items held outside the inventory.
+
+Update 1.2:
+- Ghost items shouldn't appear anymore.
+
+Update 1.1:
+- Quick research now does not affect your favourited items.
+- Fixed sounds.

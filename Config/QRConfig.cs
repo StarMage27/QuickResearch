@@ -8,7 +8,13 @@ namespace QuickResearch.Config
 		public override ConfigScope Mode => ConfigScope.ClientSide;
 
         [DefaultValue(true)]
-        public bool ShowButtonsToggle;
+        public bool ShowQRToggle;
+        [DefaultValue(true)]
+        public bool ShowRCToggle;
+        [DefaultValue(true)]
+        public bool ShowQCToggle;
+        // [DefaultValue(false)]
+        // public bool ShowDBToggle;
 
         [DefaultValue(false)]
 		public bool CompleteResearchToggle;

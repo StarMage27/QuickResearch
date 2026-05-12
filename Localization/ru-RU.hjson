@@ -1,0 +1,89 @@
+Mods: {
+	QuickResearch: {
+		Keybinds: {
+			"Quick research.DisplayName": Быстрое исследование
+			"Quick clean.DisplayName": Быстрая очитска
+			"Research craftable.DisplayName": Исследовать доступные рецепты
+		}
+
+		Configs: {
+			QRConfig: {
+				DisplayName: Quick Research Config
+
+				ShowButtonsToggle: {
+					Label: Показать кнопки
+					Tooltip: Показывает кнопки под инвентарём
+				}
+
+				CompleteResearchToggle: {
+					Label: Только полное исследование
+					Tooltip: Только исследовать предметы если их достаточно для полного исследования
+				}
+
+				ShowResearchMessagesToggle: {
+					Label: Сообщения о быстром исследовании в чате
+					Tooltip: Выводит список исследованных предметов в чат
+				}
+
+				ResearchCoinsToggle: {
+					Label: Исследовать монеты
+					Tooltip: Исследовать монеты вместе с остальными предметами
+				}
+
+				ShowCleanMessagesToggle: {
+					Label: Сообщения о быстрой очистке в чате
+					Tooltip: Выводит список удалённых предметов в чат
+				}
+
+				CleanCoinsToggle: {
+					Label: Очищать монеты
+					Tooltip: Удалять монеты вместе с остальными предметами при очистке
+				}
+
+				ShowResearchCraftableMessagesToggle: {
+					Label: Сообщения об исследовании доступных рецептов в чате
+					Tooltip: Выводит в чат список исследованых предметов из доступных рецептов
+				}
+
+				ResearchCraftableAfterQuickResearchToggle: {
+					Label: Исследовать доступные рецепты после быстрого исследования
+					Tooltip: После быстрого исследования также исследует предметы из доступных рецептов
+				}
+
+				ShowQRToggle: {
+					Label: Показать кнопку быстрого исследования
+					Tooltip: Показывает кнопку быстрого исследования под инвентарём
+				}
+
+				ShowRCToggle: {
+					Label: Показать кнопку исследования доступных предметов
+					Tooltip: Показывает кнопку исследования доступных рецептов под инвентарём
+				}
+
+				ShowQCToggle: {
+					Label: Показать кнопку быстрой очистки
+					Tooltip: Показывает кнопку быстрой очистки под инвентарём
+				}
+
+				ShowDBToggle: {
+					Label: Показать кнопку дебага
+					Tooltip: Дебаг
+				}
+			}
+		}
+
+		UI: {
+			DBButtonText: Дебаг
+			RCButtonText: Исследовать доступные рецепты
+			QCButtonText: Быстрая очистка
+			QRButtonText: Быстрое исследование
+		}
+
+		Chat: {
+			ResearchedCraftableItemsChatText: Исследованы предметы из доступных рецептов
+			CleanedChatText: Удалены
+			SacrificedChatText: Пожертвованы
+			ResearchedChatText: Исследован
+		}
+	}
+}

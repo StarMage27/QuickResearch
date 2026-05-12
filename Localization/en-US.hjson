@@ -49,7 +49,41 @@ Mods: {
 					Label: Research Craftable after Quick Research
 					Tooltip: After a Quick Research, also Research Craftable items
 				}
+
+				ShowQRToggle: {
+					Label: Show Quick Research Button
+					Tooltip: ""
+				}
+
+				ShowRCToggle: {
+					Label: Show Research Craftable Button
+					Tooltip: ""
+				}
+
+				ShowQCToggle: {
+					Label: Show Quick Clean Button
+					Tooltip: ""
+				}
+
+				ShowDBToggle: {
+					Label: Show Debug Button
+					Tooltip: Debug
+				}
 			}
+		}
+
+		UI: {
+			DBButtonText: Debug
+			RCButtonText: Research Craftable
+			QCButtonText: Quick Clean
+			QRButtonText: Quick Research
+		}
+
+		Chat: {
+			ResearchedCraftableItemsChatText: Researched craftable items
+			CleanedChatText: Cleaned
+			SacrificedChatText: Sacrificed
+			ResearchedChatText: Researched
 		}
 	}
 }

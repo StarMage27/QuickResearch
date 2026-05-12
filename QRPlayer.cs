@@ -6,236 +6,450 @@ using QuickResearch.Config;
 using Terraria.Audio;
 using Terraria.GameContent.Creative;
 using System.Collections.Generic;
+using System;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using Terraria.GameContent;
+using static Terraria.GameContent.Creative.CreativeUI;
 
-namespace QuickResearch
+namespace QuickResearch;
+
+public class QRPlayer : ModPlayer
 {
-    public class QRPlayer : ModPlayer
+    public override void ProcessTriggers(TriggersSet triggersSet)
     {
-        public List<Item> allItems;
-
-        public override void ProcessTriggers(TriggersSet triggersSet)
+        if (Main.GameMode.Equals(3))
         {
-            if (Main.GameMode.Equals(3))
-            {
-                if (QuickResearch.QRBind.JustPressed) { BeginQuickResearch(); }
-                if (QuickResearch.QCBind.JustPressed) { BeginQuickClean(); }
-                if (QuickResearch.RCBind.JustPressed) { ResearchCraftable(); }
-            }
+            if (QuickResearch.QRBind.JustPressed) { BeginQuickResearch(); }
+            if (QuickResearch.QCBind.JustPressed) { BeginQuickClean(); }
+            if (QuickResearch.RCBind.JustPressed) { ResearchCraftable(); }
         }
+    }
 
-        public static void BeginQuickResearch()
+    public static void BeginQuickResearch()
+    {
+        bool flagResearched = false;
+        bool flagSacrificed = false;
+        bool completeResearchToggle = ModContent.GetInstance<QRConfig>().CompleteResearchToggle;
+        bool showResearchMessagesToggle = ModContent.GetInstance<QRConfig>().ShowResearchMessagesToggle;
+        bool researchCoinsToggle = ModContent.GetInstance<QRConfig>().ResearchCoinsToggle;
+        bool researchCraftableAfterQuickResearchToggle = ModContent.GetInstance<QRConfig>().ResearchCraftableAfterQuickResearchToggle;
+
+        Item[] inventory = Main.LocalPlayer.inventory;
+
+        for (int i = 0; i < inventory.Length; i++)
         {
-            bool flagResearched = false;
-            bool flagSacrificed = false;
-            bool completeResearchToggle = ModContent.GetInstance<QRConfig>().CompleteResearchToggle;
-            bool showResearchMessagesToggle = ModContent.GetInstance<QRConfig>().ShowResearchMessagesToggle;
-            bool researchCoinsToggle = ModContent.GetInstance<QRConfig>().ResearchCoinsToggle;
-            bool researchCraftableAfterQuickResearchToggle = ModContent.GetInstance<QRConfig>().ResearchCraftableAfterQuickResearchToggle;
+            Item item = inventory[i];
+            int itemID = item.type;
 
-            Item[] inventory = Main.LocalPlayer.inventory;
+            if (item.favorited || item.IsAir) { continue; }
+            if (item == Main.LocalPlayer.HeldItem) { continue; }
+            if (!researchCoinsToggle && item.IsACoin) { continue; }
+            if (!CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(itemID, out int maxSacrificeCount)) { continue; }
 
-            for (int i = 0; i < inventory.Length; i++)
+            int currentSacrificeCount = GetSacrificeCount(itemID, out bool isResearched);
+            // int maxSacrificeCount = CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[itemID];
+
+            if (isResearched) { continue; }
+            if (item.stack < maxSacrificeCount - currentSacrificeCount && completeResearchToggle) { continue; }
+
+            // if (item.stack >= maxSacrificeCount - currentSacrificeCount || !completeResearchToggle)
+            // {
+            flagSacrificed = true;
+
+            SacrificeItem(item, out int amountSacrificed);
+
+            currentSacrificeCount = GetSacrificeCount(itemID, out isResearched);
+
+            if (isResearched) { flagResearched = true; }
+
+            if (!showResearchMessagesToggle) { continue; }
+
+            string itemName = item.Name;
+            if (isResearched)
             {
-                Item item = inventory[i];
-                int itemID = item.type;
-
-                if (item.favorited || item.IsAir) { continue; }
-                if (item == Main.LocalPlayer.HeldItem) { continue; }
-                if (!researchCoinsToggle && item.IsACoin) { continue; }
-                if (!CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(itemID, out _)) { continue; }
-
-                string itemName = item.Name;
-                int currentSacrificeCount = CreativeUI.GetSacrificeCount(itemID, out bool isResearched);
-                int maxSacrificeCount = CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[itemID];
-
-                if (isResearched) { continue; }
-                if (item.stack >= maxSacrificeCount - currentSacrificeCount || !completeResearchToggle)
-                {
-                    flagSacrificed = true;
-
-                    CreativeUI.SacrificeItem(item, out int amountSacrificed);
-
-                    currentSacrificeCount = CreativeUI.GetSacrificeCount(itemID, out isResearched);
-
-                    if (isResearched) { flagResearched = true; }
-
-                    if (showResearchMessagesToggle)
-                    {
-                        if (isResearched)
-                        {
-                            Main.NewText(
-                                $"[i/s{amountSacrificed}:{itemID}]" +
-                                $" Researched {itemName}!"
-                                );
-                        }
-                        else
-                        {
-                            Main.NewText(
-                                $"[i/s{amountSacrificed}:{itemID}]" +
-                                $" Sacrificed {itemName}" +
-                                $" ({currentSacrificeCount}/{maxSacrificeCount})"
-                                );
-                        }
-                    }
-                }
-            }
-
-            if (flagResearched)
-            {
-                SoundEngine.PlaySound(SoundID.Research);
-                SoundEngine.PlaySound(SoundID.ResearchComplete);
-            }
-            else if (flagSacrificed)
-            {
-                SoundEngine.PlaySound(SoundID.Research);
+                Main.NewText(
+                    $"[i/s{amountSacrificed}:{itemID}]" +
+                    $" {QRTranslation.ResearchedChatText.Value} {itemName}!"
+                    );
             }
             else
             {
-                SoundEngine.PlaySound(SoundID.MenuTick);
+                Main.NewText(
+                    $"[i/s{amountSacrificed}:{itemID}]" +
+                    $" {QRTranslation.SacrificedChatText.Value} {itemName}" +
+                    $" ({currentSacrificeCount}/{maxSacrificeCount})"
+                    );
             }
 
-            if (researchCraftableAfterQuickResearchToggle)
+            // }
+        }
+
+        if (flagResearched)
+        {
+            SoundEngine.PlaySound(SoundID.Research);
+            SoundEngine.PlaySound(SoundID.ResearchComplete);
+        }
+        else if (flagSacrificed)
+        {
+            SoundEngine.PlaySound(SoundID.Research);
+        }
+        else
+        {
+            SoundEngine.PlaySound(SoundID.MenuTick);
+        }
+
+        if (researchCraftableAfterQuickResearchToggle)
+        {
+            ResearchCraftable();
+        }
+    }
+
+    public static void BeginQuickClean()
+    {
+        bool showCleanMessagesToggle = ModContent.GetInstance<QRConfig>().ShowCleanMessagesToggle;
+        bool cleanCoinsToggle = ModContent.GetInstance<QRConfig>().CleanCoinsToggle;
+
+        bool flagCleaned = false;
+        Item[] inventory = Main.LocalPlayer.inventory;
+
+        for (int i = 0; i < inventory.Length; i++)
+        {
+            Item item = inventory[i];
+            int itemID = item.type;
+
+            if (item.favorited || item.IsAir) { continue; }
+            if (item == Main.LocalPlayer.HeldItem) { continue; }
+            if (!cleanCoinsToggle && item.IsACoin) { continue; }
+            if (!CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(itemID, out _)) { continue; }
+
+            string itemName = item.Name;
+            int itemAmount = item.stack;
+
+            GetSacrificeCount(itemID, out bool isResearched);
+
+            if (isResearched)
             {
-                ResearchCraftable();
+                item.TurnToAir();
+                flagCleaned = true;
+            }
+
+            if (showCleanMessagesToggle)
+            {
+                Main.NewText(
+                    $"[i/s{itemAmount}:{itemID}]" +
+                    $" {QRTranslation.CleanedChatText.Value} {itemName}."
+                    );
             }
         }
 
-        public static void BeginQuickClean()
+        if (flagCleaned)
         {
-            bool showCleanMessagesToggle = ModContent.GetInstance<QRConfig>().ShowCleanMessagesToggle;
-            bool cleanCoinsToggle = ModContent.GetInstance<QRConfig>().CleanCoinsToggle;
-
-            bool flagCleaned = false;
-            Item[] inventory = Main.LocalPlayer.inventory;
-
-            for (int i = 0; i < inventory.Length; i++)
-            {
-                Item item = inventory[i];
-                int itemID = item.type;
-
-                if (item.favorited || item.IsAir) { continue; }
-                if (item == Main.LocalPlayer.HeldItem) { continue; }
-                if (!cleanCoinsToggle && item.IsACoin) { continue; }
-                if (!CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(itemID, out _)) { continue; }
-
-                string itemName = item.Name;
-                int itemAmount = item.stack;
-
-                CreativeUI.GetSacrificeCount(itemID, out bool isResearched);
-
-                if (isResearched)
-                {
-                    item.TurnToAir();
-                    flagCleaned = true;
-                }
-
-                if (showCleanMessagesToggle)
-                {
-                    Main.NewText(
-                        $"[i/s{itemAmount}:{itemID}]" +
-                        $" Cleaned {itemName}."
-                        );
-                }
-            }
-
-            if (flagCleaned)
-            {
-                SoundEngine.PlaySound(SoundID.Grab);
-            }
-            else
-            {
-                SoundEngine.PlaySound(SoundID.MenuTick);
-            }
+            SoundEngine.PlaySound(SoundID.Grab);
         }
-
-        public static void ResearchCraftable()
+        else
         {
-            bool showResearchCraftableMessagesToggle = ModContent.GetInstance<QRConfig>().ShowResearchCraftableMessagesToggle;
+            SoundEngine.PlaySound(SoundID.MenuTick);
+        }
+    }
 
-            bool itemsAreResearched = true;
-            bool itemsWereResearched = false;
-            string researchedItems = "";
+    public static void ResearchCraftable()
+    {
+        bool showResearchCraftableMessagesToggle = ModContent.GetInstance<QRConfig>().ShowResearchCraftableMessagesToggle;
 
-            while (itemsAreResearched == true)
+        bool itemsAreResearched = true;
+        bool itemsWereResearched = false;
+        string researchedItems = "";
+
+        bool nearShimmer = Condition.NearShimmer.IsMet();
+        GetSacrificeCount(ItemID.BottomlessShimmerBucket, out bool shimmerBucketResearched);
+
+        while (itemsAreResearched == true)
+        {
+            itemsAreResearched = false;
+
+            foreach (Recipe recipe in Main.recipe)
             {
-                itemsAreResearched = false;
-
-                foreach (var recipe in Main.recipe)
+                int outputItemID = recipe.createItem.type;
+                if (outputItemID == ItemID.None) { continue; }
+                GetSacrificeCount(outputItemID, out bool resultingItemIsResearched);
+                if (resultingItemIsResearched)
                 {
-                    bool stationResearched = false;
+                    if (outputItemID == ItemID.DirtBlock) { continue; } // This is necessary, trust
                     
-                    if (recipe.requiredTile.Count == 0)
+                    // Shimmer uncrafting recipes
+                    int transformedItemID = ItemID.Sets.ShimmerTransformToItem[outputItemID];
+                    if (transformedItemID > 0 || !(nearShimmer || shimmerBucketResearched)) { continue; }
+
+                    foreach (var item in recipe.requiredItem)
                     {
-                        stationResearched = true;
+                        ItemSacrificeResult result2 = ResearchItem(item.type);
+                        if (result2 == ItemSacrificeResult.CannotSacrifice) { continue; }
+                        
+                        itemsAreResearched = true;
+                        itemsWereResearched = true;
+                        if (!showResearchCraftableMessagesToggle) { continue; }
+                        researchedItems += $"[i/s1:{item.type}]";
                     }
 
-                    if (recipe.createItem.type == 0)
-                    {
-                        continue;
-                    }
 
+                    continue;
+                }
+
+                if (!ConditionsAreMet(recipe)) { continue; }
+
+
+                bool stationResearched = false;
+
+                if (recipe.requiredTile.Count == 0)
+                {
+                    stationResearched = true;
+                }
+                else
+                {
                     foreach (var tile in recipe.requiredTile)
                     {
-                        foreach (var (item, tileID) in QuickResearch.itemsAndTileIDsOfStations)
+                        if (tile == TileID.DemonAltar && PlayerMeetsTileRequirements(Main.LocalPlayer, recipe))
                         {
-                            if (tile == tileID)
+                            stationResearched = true; break;
+                        }
+
+                        foreach (var (item, tileID) in QRModSystem.itemAndTileIDsOfStations)
+                        {
+                            if (tile != tileID) { continue; }
+
+                            // if (!CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(item.type, out _)) { continue; }
+                            GetSacrificeCount(item.type, out bool requiredStationIsResearched);
+                            if (requiredStationIsResearched)
                             {
-                                CreativeUI.GetSacrificeCount(item.type, out bool requiredStationIsResearched);
-                                if (requiredStationIsResearched)
-                                {
-                                    stationResearched = true;
-                                    break;
-                                }
+                                stationResearched = true;
+                                break;
                             }
                         }
                         if (stationResearched) { break; }
                     }
+                }
+                if (!stationResearched) { continue; }
 
-                    if (!stationResearched) { continue; }
+                bool allIngredientsResearched = true;
+                foreach (var requiredItem in recipe.requiredItem)
+                {
+                    GetSacrificeCount(requiredItem.type, out bool requiredItemIsResearched);
+                    if (requiredItemIsResearched)
+                    { continue; }
 
-                    bool allItemsResearched = true;
-
-                    foreach (var requiredItem in recipe.requiredItem)
+                    bool allGroupsResearched = false;
+                    if (recipe.acceptedGroups.Count > 0)
                     {
-                        CreativeUI.GetSacrificeCount(requiredItem.type, out bool requiredItemIsResearched);
-                        if (!requiredItemIsResearched)
+                        allGroupsResearched = true;
+                        foreach (var group in recipe.acceptedGroups)
                         {
-                            allItemsResearched = false;
-                            break;
+                            if (IsItemInResearchedGroup(requiredItem.type, group))
+                            {
+                                allGroupsResearched = true;
+                                break;
+                            }
+                            else
+                            {
+                                allGroupsResearched = false;
+                            }
                         }
                     }
 
-                    if (allItemsResearched)
+                    if (!allGroupsResearched)
                     {
-                        Item item = recipe.createItem;
-                        CreativeUI.GetSacrificeCount(item.type, out bool resultingItemIsResearched);
-
-                        if (resultingItemIsResearched)
-                        {
-                            continue;
-                        }
-
-                        CreativeUI.ResearchItem(item.type);
-                        itemsAreResearched = true;
-                        itemsWereResearched = true;
-                        researchedItems += $"[i/s1:{item.type}]";
+                        allIngredientsResearched = false;
+                        break;
                     }
                 }
+
+                if (!CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(outputItemID, out _)) { continue; }
+                if (!allIngredientsResearched) { continue; }
+
+                ItemSacrificeResult result = ResearchItem(outputItemID);
+                if (result == ItemSacrificeResult.CannotSacrifice) { continue; }
+                itemsAreResearched = true;
+                itemsWereResearched = true;
+                if (!showResearchCraftableMessagesToggle) { continue; }
+                researchedItems += $"[i/s1:{outputItemID}]";
+
             }
 
-            if (showResearchCraftableMessagesToggle && itemsWereResearched)
+            // Shimmer transformation recipes
+            foreach (int itemID in QRModSystem.allItemIDs)
             {
-                Main.NewText("Researched craftable items: " + researchedItems);
-            }
 
-            if (itemsWereResearched)
-            {
-                SoundEngine.PlaySound(SoundID.ResearchComplete);
-            }
-            else
-            {
-                SoundEngine.PlaySound(SoundID.MenuTick);
+                int transformedItemID = ItemID.Sets.ShimmerTransformToItem[itemID];
+                if (transformedItemID <= 0 || !(nearShimmer || shimmerBucketResearched)) { continue; }
+
+                GetSacrificeCount(itemID, out bool itemIsResearched);
+                GetSacrificeCount(transformedItemID, out bool transformedItemIsResearched);
+                if (!itemIsResearched || transformedItemIsResearched) { continue; }
+
+                ItemSacrificeResult result = ResearchItem(transformedItemID);
+
+                if (result == ItemSacrificeResult.CannotSacrifice) { continue; }
+
+                itemsAreResearched = true;
+                itemsWereResearched = true;
+                if (!showResearchCraftableMessagesToggle) { continue; }
+                researchedItems += $"[i/s1:{transformedItemID}]";
             }
         }
+
+
+        if (showResearchCraftableMessagesToggle && itemsWereResearched)
+        {
+            Main.NewText($"{QRTranslation.ResearchedCraftableItemsChatText.Value}: " + researchedItems);
+        }
+
+        if (itemsWereResearched)
+        {
+            SoundEngine.PlaySound(SoundID.ResearchComplete);
+        }
+        else
+        {
+            SoundEngine.PlaySound(SoundID.MenuTick);
+        }
+    }
+
+    private static bool IsItemInResearchedGroup(int itemID, int groupID)
+    {
+        RecipeGroup group = RecipeGroup.recipeGroups[groupID];
+        bool itemInTheGroup = false;
+        bool groupHasItemsResearched = false;
+        foreach (var groupItem in group.ValidItems)
+        {
+            GetSacrificeCount(groupItem, out bool groupItemIsResearched);
+
+            if (groupItem == itemID)
+            {
+                itemInTheGroup = true;
+            }
+
+            if (groupItemIsResearched)
+            {
+                groupHasItemsResearched = true;
+            }
+        }
+
+        return itemInTheGroup && groupHasItemsResearched;
+    }
+
+    readonly static int[] graveIDs = [
+        ItemID.Tombstone,
+        ItemID.GraveMarker,
+        ItemID.CrossGraveMarker,
+        ItemID.Headstone,
+        ItemID.Gravestone,
+        ItemID.Obelisk,
+
+        ItemID.RichGravestone1,
+        ItemID.RichGravestone2,
+        ItemID.RichGravestone3,
+        ItemID.RichGravestone4,
+        ItemID.RichGravestone5,
+    ];
+    readonly static int[] waterItemIDs = [
+        ItemID.WaterBucket,
+        ItemID.BottomlessBucket,
+        ItemID.GoldenSink,
+
+        ItemID.OasisFountain,
+        ItemID.CavernFountain,
+        ItemID.IcyWaterFountain,
+        ItemID.PureWaterFountain,
+        ItemID.BloodWaterFountain,
+        ItemID.DesertWaterFountain,
+        ItemID.JungleWaterFountain,
+        ItemID.CorruptWaterFountain,
+        ItemID.CrimsonWaterFountain,
+        ItemID.HallowedWaterFountain,
+    ];
+    readonly static int[] honeyItemIDs = [
+        ItemID.HoneyBucket,
+        ItemID.BottomlessHoneyBucket,
+    ];
+    readonly static int[] lavaItemIDs = [
+        ItemID.LavaBucket,
+        ItemID.BottomlessLavaBucket,
+    ];
+    readonly static int[] snowItemIDs = [
+        ItemID.SnowBlock,
+        ItemID.IceBlock,
+        ItemID.PurpleIceBlock,
+        ItemID.RedIceBlock,
+        ItemID.PinkIceBlock,
+    ];
+
+    private static bool ConditionsAreMet(Recipe recipe)
+    {
+        bool conditionsMet = true;
+        foreach (Condition condition in recipe.Conditions)
+        {
+            if (condition == Condition.NearWater && (AnyItemResearched(waterItemIDs) || AnyItemResearched(QRModSystem.sinks)))
+            {
+                break;
+            }
+            if (condition == Condition.NearHoney && AnyItemResearched(honeyItemIDs))
+            {
+                break;
+            }
+            if (condition == Condition.NearLava && AnyItemResearched(lavaItemIDs))
+            {
+                break;
+            }
+            if (condition == Condition.InSnow && AnyItemResearched(snowItemIDs))
+            {
+                break;
+            }
+            if (condition == Condition.InGraveyard && AnyItemResearched(graveIDs))
+            {
+                break;
+            }
+            conditionsMet = conditionsMet && condition.IsMet();
+        }
+        return conditionsMet;
+    }
+
+    private static bool AnyItemResearched(int[] itemIDs)
+    {
+        bool anyItemResearched = false;
+        foreach (int itemID in itemIDs)
+        {
+            GetSacrificeCount(itemID, out bool researched);
+            if (researched)
+            {
+                anyItemResearched = true;
+                break;
+            }
+        }
+        return anyItemResearched;
+    }
+
+    private static bool AnyItemResearched(List<int> itemIDs)
+    {
+        bool anyItemResearched = false;
+        foreach (int itemID in itemIDs)
+        {
+            GetSacrificeCount(itemID, out bool researched);
+            if (researched)
+            {
+                anyItemResearched = true;
+                break;
+            }
+        }
+        return anyItemResearched;
+    }
+
+    private static bool PlayerMeetsTileRequirements(Player player, Recipe tempRec)
+    {
+        for (int i = 0; i < tempRec.requiredTile.Count && tempRec.requiredTile[i] != -1; i++)
+        {
+            if (!player.adjTile[tempRec.requiredTile[i]])
+                return false;
+        }
+
+        return true;
     }
 }
