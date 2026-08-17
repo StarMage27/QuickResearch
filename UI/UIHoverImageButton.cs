@@ -4,21 +4,19 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.GameContent.UI.Elements;
 using ReLogic.Content;
-using System.IO;
 
 namespace QuickResearch.UI
 {
-    internal class UIHoverImageButton : UIImageButton
+    internal class UIHoverImageButton(Asset<Texture2D> texture, string hoverText, string nPath) : UIImageButton(texture)
     {
-        internal string HoverText;
+        internal string HoverText = hoverText;
         internal bool mouseover = false;
         internal bool mousedown = false;
-        internal string path;
+        internal string path = nPath;
 
-        public UIHoverImageButton(Asset<Texture2D> texture, string hoverText, string nPath) : base(texture)
+        public void SetHoverText(string newHoverText)
         {
-            HoverText = hoverText;
-            path = nPath;
+            HoverText = newHoverText;
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch)

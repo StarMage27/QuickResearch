@@ -1,0 +1,8 @@
+[*.{cs,vb}]
+
+# IDE0305: Simplify collection initialization
+dotnet_diagnostic.IDE0305.severity = none
+[*.{cs,vb}]
+
+# IDE0305: Simplify collection initialization
+dotnet_style_prefer_collection_expression = never

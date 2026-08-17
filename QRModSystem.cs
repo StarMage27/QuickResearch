@@ -9,24 +9,22 @@ namespace QuickResearch;
 
 public class QRModSystem : ModSystem
 {
-    public static List<int> allItemIDs = [];
-    public static List<(Item item, int tileID)> placeableItemsWithTileIDs = [];
-    public static HashSet<(Item item, int tileID)> itemAndTileIDsOfStations = [];
-    public static Dictionary<int, List<int>> itemIDAndItsGroups = [];
-    public static HashSet<int> craftingTileIDs = [];
+    private static readonly List<(Item item, int tileID)> placeableItemsWithTileIDs = [];
+    private static readonly HashSet<int> craftingTileIDs = [];
 
-    public static List<int> sinks = [];
+    public static readonly List<int> allItemIDs = [];
+    public static readonly HashSet<(Item item, int tileID)> itemAndTileIDsOfStations = [];
+    public static readonly List<int> sinks = [];
 
     public override void PostAddRecipes()
     {
         GetItemIDs();
         GetTileItems();
-        // GetItemsWithGroups();
         GetAllCraftingItemsAndTiles();
-        sinks = tileItemIDsCraftedFromItemID(ItemID.WaterBucket);
+        sinks.AddRange(TileItemIDsCraftedFromItemID(ItemID.WaterBucket));
     }
 
-    public static void GetTileItems()
+    private static void GetTileItems()
     {
         for (int i = 1; i < ItemID.Count; i++)
         {
@@ -45,7 +43,7 @@ public class QRModSystem : ModSystem
         }
     }
 
-    public static void GetItemIDs()
+    private static void GetItemIDs()
     {
         for (int i = 1; i < ItemID.Count; i++)
         {
@@ -59,27 +57,7 @@ public class QRModSystem : ModSystem
         }
     }
 
-    public static void GetItemsWithGroups()
-    {
-        foreach (var (groupID, group) in RecipeGroup.recipeGroups)
-        {
-            foreach (int itemID in group.ValidItems)
-            {
-                bool itemIsHere = itemIDAndItsGroups.TryGetValue(itemID, out List<int> groups);
-                if (!itemIsHere)
-                {
-                    itemIDAndItsGroups.Add(itemID, new List<int>(groupID));
-                }
-                else
-                {
-                    groups.Add(groupID);
-                }
-            }
-        }
-    }
-
-
-    public static void GetAllCraftingItemsAndTiles()
+    private static void GetAllCraftingItemsAndTiles()
     {
         foreach (Recipe recipe in Main.recipe)
         {
@@ -102,7 +80,7 @@ public class QRModSystem : ModSystem
         }
     }
 
-    public static List<int> itemIDsCraftedFromItemID(int ingridientID)
+    public static List<int> ItemIDsCraftedFromItemID(int ingridientID)
     {
         HashSet<int> output = [];
         foreach (Recipe recipe in Main.recipe)
@@ -116,7 +94,7 @@ public class QRModSystem : ModSystem
         return output.ToList();
     }
 
-    public static List<int> tileItemIDsCraftedFromItemID(int ingridientID)
+    public static List<int> TileItemIDsCraftedFromItemID(int ingridientID)
     {
         HashSet<int> output = [];
         foreach (Recipe recipe in Main.recipe)
@@ -133,7 +111,7 @@ public class QRModSystem : ModSystem
 
     public override void Unload()
     {
-        placeableItemsWithTileIDs = null;
-        itemAndTileIDsOfStations = null;
+        placeableItemsWithTileIDs.Clear();
+        itemAndTileIDsOfStations.Clear();
     }
 }

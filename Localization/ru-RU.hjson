@@ -83,7 +83,7 @@ Mods: {
 			ResearchedCraftableItemsChatText: Исследованы предметы из доступных рецептов
 			CleanedChatText: Удалены
 			SacrificedChatText: Пожертвованы
-			ResearchedChatText: Исследован
+			ResearchedChatText: Исследованы
 		}
 	}
 }

@@ -6,36 +6,32 @@ using QuickResearch.Config;
 using Terraria.Audio;
 using Terraria.GameContent.Creative;
 using System.Collections.Generic;
-using System;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using Terraria.GameContent;
 using static Terraria.GameContent.Creative.CreativeUI;
 
 namespace QuickResearch;
 
 public class QRPlayer : ModPlayer
 {
+    private static readonly CreativeItemSacrificesCatalog sacrificesCatalog = CreativeItemSacrificesCatalog.Instance;
+
     public override void ProcessTriggers(TriggersSet triggersSet)
     {
-        if (Main.GameMode.Equals(3))
-        {
-            if (QuickResearch.QRBind.JustPressed) { BeginQuickResearch(); }
-            if (QuickResearch.QCBind.JustPressed) { BeginQuickClean(); }
-            if (QuickResearch.RCBind.JustPressed) { ResearchCraftable(); }
-        }
+        if (!Main.GameMode.Equals(GameModeID.Creative)) { return; }
+        if (QuickResearch.QRBind.JustPressed) { BeginQuickResearch(); }
+        if (QuickResearch.QCBind.JustPressed) { BeginQuickClean(); }
+        if (QuickResearch.RCBind.JustPressed) { ResearchCraftable(); }
     }
 
     public static void BeginQuickResearch()
     {
+        QRConfig config = ModContent.GetInstance<QRConfig>();
         bool flagResearched = false;
         bool flagSacrificed = false;
-        bool completeResearchToggle = ModContent.GetInstance<QRConfig>().CompleteResearchToggle;
-        bool showResearchMessagesToggle = ModContent.GetInstance<QRConfig>().ShowResearchMessagesToggle;
-        bool researchCoinsToggle = ModContent.GetInstance<QRConfig>().ResearchCoinsToggle;
-        bool researchCraftableAfterQuickResearchToggle = ModContent.GetInstance<QRConfig>().ResearchCraftableAfterQuickResearchToggle;
+        bool showResearchMessagesToggle = config.ShowResearchMessagesToggle;
 
         Item[] inventory = Main.LocalPlayer.inventory;
+        string sacrificedItems = "";
+        string researchedItems = "";
 
         for (int i = 0; i < inventory.Length; i++)
         {
@@ -44,62 +40,54 @@ public class QRPlayer : ModPlayer
 
             if (item.favorited || item.IsAir) { continue; }
             if (item == Main.LocalPlayer.HeldItem) { continue; }
-            if (!researchCoinsToggle && item.IsACoin) { continue; }
-            if (!CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(itemID, out int maxSacrificeCount)) { continue; }
+            if (!config.ResearchCoinsToggle && item.IsACoin) { continue; }
+            if (!sacrificesCatalog.TryGetSacrificeCountCapToUnlockInfiniteItems(itemID, out int maxSacrificeCount)) { continue; }
 
             int currentSacrificeCount = GetSacrificeCount(itemID, out bool isResearched);
-            // int maxSacrificeCount = CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[itemID];
 
             if (isResearched) { continue; }
-            if (item.stack < maxSacrificeCount - currentSacrificeCount && completeResearchToggle) { continue; }
+            bool canBeResearched = item.stack >= maxSacrificeCount - currentSacrificeCount;
+            if (!canBeResearched && config.CompleteResearchToggle) { continue; }
 
-            // if (item.stack >= maxSacrificeCount - currentSacrificeCount || !completeResearchToggle)
-            // {
             flagSacrificed = true;
 
             SacrificeItem(item, out int amountSacrificed);
 
-            currentSacrificeCount = GetSacrificeCount(itemID, out isResearched);
-
-            if (isResearched) { flagResearched = true; }
-
+            if (canBeResearched) { flagResearched = true; }
             if (!showResearchMessagesToggle) { continue; }
 
-            string itemName = item.Name;
-            if (isResearched)
+            if (canBeResearched)
             {
-                Main.NewText(
-                    $"[i/s{amountSacrificed}:{itemID}]" +
-                    $" {QRTranslation.ResearchedChatText.Value} {itemName}!"
-                    );
+                researchedItems += $"[i/s1:{itemID}]";
             }
             else
             {
-                Main.NewText(
-                    $"[i/s{amountSacrificed}:{itemID}]" +
-                    $" {QRTranslation.SacrificedChatText.Value} {itemName}" +
-                    $" ({currentSacrificeCount}/{maxSacrificeCount})"
-                    );
+                sacrificedItems += $"[i/s{amountSacrificed}:{itemID}]";
             }
-
-            // }
         }
 
         if (flagResearched)
         {
             SoundEngine.PlaySound(SoundID.Research);
             SoundEngine.PlaySound(SoundID.ResearchComplete);
+            if (showResearchMessagesToggle) {
+                Main.NewText($"{QRTranslation.SacrificedChatText.Value}: {sacrificedItems}");
+                Main.NewText($"{QRTranslation.ResearchedChatText.Value}: {researchedItems}");
+            }
         }
         else if (flagSacrificed)
         {
             SoundEngine.PlaySound(SoundID.Research);
+            if (showResearchMessagesToggle) {
+                Main.NewText($"{QRTranslation.SacrificedChatText.Value}: {sacrificedItems}");
+            }
         }
         else
         {
             SoundEngine.PlaySound(SoundID.MenuTick);
         }
 
-        if (researchCraftableAfterQuickResearchToggle)
+        if (config.ResearchCraftableAfterQuickResearchToggle)
         {
             ResearchCraftable();
         }
@@ -107,12 +95,12 @@ public class QRPlayer : ModPlayer
 
     public static void BeginQuickClean()
     {
-        bool showCleanMessagesToggle = ModContent.GetInstance<QRConfig>().ShowCleanMessagesToggle;
-        bool cleanCoinsToggle = ModContent.GetInstance<QRConfig>().CleanCoinsToggle;
-
+        QRConfig config = ModContent.GetInstance<QRConfig>();
+        bool showCleanMessagesToggle = config.ShowCleanMessagesToggle;
         bool flagCleaned = false;
         Item[] inventory = Main.LocalPlayer.inventory;
-
+        string cleanedItems = "";
+        
         for (int i = 0; i < inventory.Length; i++)
         {
             Item item = inventory[i];
@@ -120,27 +108,18 @@ public class QRPlayer : ModPlayer
 
             if (item.favorited || item.IsAir) { continue; }
             if (item == Main.LocalPlayer.HeldItem) { continue; }
-            if (!cleanCoinsToggle && item.IsACoin) { continue; }
-            if (!CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(itemID, out _)) { continue; }
-
-            string itemName = item.Name;
-            int itemAmount = item.stack;
+            if (!config.CleanCoinsToggle && item.IsACoin) { continue; }
+            if (!sacrificesCatalog.TryGetSacrificeCountCapToUnlockInfiniteItems(itemID, out _)) { continue; }
 
             GetSacrificeCount(itemID, out bool isResearched);
+            if (!isResearched) { continue; }
 
-            if (isResearched)
-            {
-                item.TurnToAir();
-                flagCleaned = true;
-            }
+            int itemAmount = item.stack;
+            item.TurnToAir();
+            flagCleaned = true;
 
-            if (showCleanMessagesToggle)
-            {
-                Main.NewText(
-                    $"[i/s{itemAmount}:{itemID}]" +
-                    $" {QRTranslation.CleanedChatText.Value} {itemName}."
-                    );
-            }
+            if (!showCleanMessagesToggle) { continue; }
+            cleanedItems += $"[i/s{itemAmount}:{itemID}]";
         }
 
         if (flagCleaned)
@@ -151,11 +130,17 @@ public class QRPlayer : ModPlayer
         {
             SoundEngine.PlaySound(SoundID.MenuTick);
         }
+
+        if (showCleanMessagesToggle)
+        {
+            Main.NewText($"{QRTranslation.QCChatText.Value}: {cleanedItems}.");
+        }
     }
 
     public static void ResearchCraftable()
     {
-        bool showResearchCraftableMessagesToggle = ModContent.GetInstance<QRConfig>().ShowResearchCraftableMessagesToggle;
+        QRConfig config = ModContent.GetInstance<QRConfig>();
+        bool showResearchCraftableMessagesToggle = config.ShowResearchCraftableMessagesToggle;
 
         bool itemsAreResearched = true;
         bool itemsWereResearched = false;
@@ -176,7 +161,7 @@ public class QRPlayer : ModPlayer
                 if (resultingItemIsResearched)
                 {
                     if (outputItemID == ItemID.DirtBlock) { continue; } // This is necessary, trust
-                    
+
                     // Shimmer uncrafting recipes
                     int transformedItemID = ItemID.Sets.ShimmerTransformToItem[outputItemID];
                     if (transformedItemID > 0 || !(nearShimmer || shimmerBucketResearched)) { continue; }
@@ -185,13 +170,12 @@ public class QRPlayer : ModPlayer
                     {
                         ItemSacrificeResult result2 = ResearchItem(item.type);
                         if (result2 == ItemSacrificeResult.CannotSacrifice) { continue; }
-                        
+
                         itemsAreResearched = true;
                         itemsWereResearched = true;
                         if (!showResearchCraftableMessagesToggle) { continue; }
                         researchedItems += $"[i/s1:{item.type}]";
                     }
-
 
                     continue;
                 }
@@ -199,37 +183,35 @@ public class QRPlayer : ModPlayer
                 if (!ConditionsAreMet(recipe)) { continue; }
 
 
-                bool stationResearched = false;
+                bool stationAvailable = false;
 
                 if (recipe.requiredTile.Count == 0)
                 {
-                    stationResearched = true;
+                    stationAvailable = true;
+                }
+                else if (PlayerMeetsTileRequirements(Main.LocalPlayer, recipe))
+                {
+                    stationAvailable = true;
                 }
                 else
                 {
                     foreach (var tile in recipe.requiredTile)
                     {
-                        if (tile == TileID.DemonAltar && PlayerMeetsTileRequirements(Main.LocalPlayer, recipe))
-                        {
-                            stationResearched = true; break;
-                        }
-
                         foreach (var (item, tileID) in QRModSystem.itemAndTileIDsOfStations)
                         {
                             if (tile != tileID) { continue; }
 
-                            // if (!CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(item.type, out _)) { continue; }
                             GetSacrificeCount(item.type, out bool requiredStationIsResearched);
                             if (requiredStationIsResearched)
                             {
-                                stationResearched = true;
+                                stationAvailable = true;
                                 break;
                             }
                         }
-                        if (stationResearched) { break; }
+                        if (stationAvailable) { break; }
                     }
                 }
-                if (!stationResearched) { continue; }
+                if (!stationAvailable) { continue; }
 
                 bool allIngredientsResearched = true;
                 foreach (var requiredItem in recipe.requiredItem)
@@ -300,7 +282,7 @@ public class QRPlayer : ModPlayer
 
         if (showResearchCraftableMessagesToggle && itemsWereResearched)
         {
-            Main.NewText($"{QRTranslation.ResearchedCraftableItemsChatText.Value}: " + researchedItems);
+            Main.NewText($"{QRTranslation.RCItemsChatText.Value}: " + researchedItems);
         }
 
         if (itemsWereResearched)
@@ -442,11 +424,11 @@ public class QRPlayer : ModPlayer
         return anyItemResearched;
     }
 
-    private static bool PlayerMeetsTileRequirements(Player player, Recipe tempRec)
+    private static bool PlayerMeetsTileRequirements(Player player, Recipe recipe)
     {
-        for (int i = 0; i < tempRec.requiredTile.Count && tempRec.requiredTile[i] != -1; i++)
+        for (int i = 0; i < recipe.requiredTile.Count && recipe.requiredTile[i] != -1; i++)
         {
-            if (!player.adjTile[tempRec.requiredTile[i]])
+            if (!player.adjTile[recipe.requiredTile[i]])
                 return false;
         }
 
